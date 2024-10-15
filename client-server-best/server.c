@@ -138,12 +138,15 @@ void handleFileRequest(int net_fd, User* user) {
 	switch (request.action)
 	{
 	case FILE_CREATE:
+
 		createUserFile(request.file_name, user);
 		response.size = 0;
 		sendData(net_fd, &response, sizeof(response));
 		printf("\033[34m[Info] [Client %d (%s)]\033[0m: Client created file %s!\n", net_fd, user->login, request.file_name);
 		break;
+
 	case FILE_EDIT:
+
 		FILE* file = getUserFile(request.file_name, user);
 		if (file == NULL) client_error(net_fd, "Файл не найден");
 		fseek(file, 0, SEEK_END); // seek to end of file
@@ -156,14 +159,18 @@ void handleFileRequest(int net_fd, User* user) {
 			c = fgetc(file);
 			sendData(net_fd, &c, 1);
 		} while (c != EOF);
+
 		printf("\033[34m[Info] [Client %d (%s)]\033[0m: Client getted file %s for edit!\n", net_fd, user->login, request.file_name);
 		break;
+
 	case FILE_REMOVE:
+
 		if (!deleteUserFile(request.file_name, user)) client_error(net_fd, "Не удалось удалить файл");
 		response.size = 0;
 		sendData(net_fd, &response, sizeof(response));
 		printf("\033[34m[Info] [Client %d (%s)]\033[0m: Client deleted file%s!\n", net_fd, user->login, request.file_name);
 		break;
+
 	default:
 		client_error(net_fd, "Неизвестное действие над файлом");
 	}
@@ -180,6 +187,7 @@ void handleFileSaveRequest(int net_fd, User* user) {
 		client_error(net_fd, "Не удалось сохранить файл");
 	sendData(net_fd, &response, sizeof(response));
 }
+
 void* client_process(void* fd)
 {
 	int net_fd = *(int*)fd;
